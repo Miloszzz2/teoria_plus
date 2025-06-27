@@ -3,6 +3,8 @@
 Teoria Plus to nowoczesna aplikacja React Native (Expo) do nauki i ćwiczenia
 egzaminu teoretycznego na prawo jazdy.
 
+![obraz](https://github.com/user-attachments/assets/61b9cd5a-9276-462d-a429-12fccd501e49)
+
 ## Rozpoczęcie pracy
 
 Aby uruchomić projekt lokalnie:
