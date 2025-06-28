@@ -1,10 +1,8 @@
 // Auto-generated file - DO NOT EDIT MANUALLY
 // Run 'node generateMediaMap.js' to regenerate
-// Generated on: 2025-06-28T18:02:32.288Z
+// Generated on: 2025-06-28T18:44:42.983Z
 
 export const MEDIA_MAP: { [key: string]: any } = {
-  'apteczka.jpg': require('./images/apteczka.jpg'),
-  'brak_zdjecia_1024x576.jpg': require('./images/brak_zdjecia_1024x576.jpg'),
   'D15b_24org.mp4': require('./images/D15b_24org.mp4'),
   'D16_01_org.mp4': require('./images/D16_01_org.mp4'),
   'D16_02_org_2.mp4': require('./images/D16_02_org_2.mp4'),
