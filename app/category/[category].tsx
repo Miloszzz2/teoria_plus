@@ -4,7 +4,6 @@ import { View, ScrollView, ActivityIndicator, Image, TouchableOpacity, StyleShee
 import StyledText from '@/components/StyledText';
 import { supabase } from '@/utils/supabase';
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Video, ResizeMode, VideoFullscreenUpdateEvent } from "expo-av";
 import { Client, Query, Storage } from 'react-native-appwrite';
 import { getMediaSource } from "@/assets/mediaMap";
 import * as ScreenOrientation from 'expo-screen-orientation';

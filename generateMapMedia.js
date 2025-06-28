@@ -18,9 +18,16 @@ function generateMediaMap() {
       const files = fs.readdirSync(imagesDir);
       console.log(`📁 Znaleziono ${files.length} plików w folderze`);
 
-      // Filtruj tylko pliki mediów
+      // Filtruj tylko pliki mediów, pomijając splash/icon/adaptive-icon oraz wybrane pliki
+      const ignoreFiles = [
+         'w11 korytarz  z 005.jpg',
+         'w11_korytarz_z_001.jpg',
+      ];
       const mediaFiles = files.filter(file => {
          const ext = path.extname(file).toLowerCase();
+         const lower = file.toLowerCase();
+         if (lower.includes('splash') || lower.includes('icon') || lower.includes('adaptive')) return false;
+         if (ignoreFiles.includes(lower)) return false;
          return ['.jpg', '.jpeg', '.png', '.gif', '.mp4', '.mov', '.wmv', '.avi'].includes(ext);
       });
 

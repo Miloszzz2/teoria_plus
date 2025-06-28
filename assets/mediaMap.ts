@@ -1,9 +1,8 @@
 // Auto-generated file - DO NOT EDIT MANUALLY
 // Run 'node generateMediaMap.js' to regenerate
-// Generated on: 2025-06-25T18:54:46.838Z
+// Generated on: 2025-06-28T18:02:32.288Z
 
 export const MEDIA_MAP: { [key: string]: any } = {
-  'adaptive-icon.png': require('./images/adaptive-icon.png'),
   'apteczka.jpg': require('./images/apteczka.jpg'),
   'brak_zdjecia_1024x576.jpg': require('./images/brak_zdjecia_1024x576.jpg'),
   'D15b_24org.mp4': require('./images/D15b_24org.mp4'),
@@ -186,7 +185,6 @@ export const MEDIA_MAP: { [key: string]: any } = {
   'F34pop_aa.mp4': require('./images/F34pop_aa.mp4'),
   'F34pop_bb.mp4': require('./images/F34pop_bb.mp4'),
   'F35.mp4': require('./images/F35.mp4'),
-  'favicon.png': require('./images/favicon.png'),
   'Film_456.mp4': require('./images/Film_456.mp4'),
   'Film_457.mp4': require('./images/Film_457.mp4'),
   'Film_465.mp4': require('./images/Film_465.mp4'),
@@ -227,7 +225,6 @@ export const MEDIA_MAP: { [key: string]: any } = {
   'i7055_1.mp4': require('./images/i7055_1.mp4'),
   'i7056_1.mp4': require('./images/i7056_1.mp4'),
   'i7108_3.jpg': require('./images/i7108_3.jpg'),
-  'icon.png': require('./images/icon.png'),
   'image 002GN.jpg': require('./images/image 002GN.jpg'),
   'image 003GN.jpg': require('./images/image 003GN.jpg'),
   'image 005GN.jpg': require('./images/image 005GN.jpg'),
@@ -697,7 +694,6 @@ export const MEDIA_MAP: { [key: string]: any } = {
   'sniegidroga1-ztPIC.jpg': require('./images/sniegidroga1-ztPIC.jpg'),
   'sniegidroga2-ztPIC.jpg': require('./images/sniegidroga2-ztPIC.jpg'),
   'sniegidroga3-ztPIC.jpg': require('./images/sniegidroga3-ztPIC.jpg'),
-  'splash-icon.png': require('./images/splash-icon.png'),
   'szerokosc_2pilotow.jpg': require('./images/szerokosc_2pilotow.jpg'),
   'szerokosc_pilot.jpg': require('./images/szerokosc_pilot.jpg'),
   'TF02a_2ujecie.mp4': require('./images/TF02a_2ujecie.mp4'),

@@ -3,7 +3,6 @@ import { View, TouchableOpacity, StyleSheet, ActivityIndicator, Image, Alert, Sc
 import StyledText from "@/components/StyledText";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '@/utils/supabase';
-import { ResizeMode, Video, VideoFullscreenUpdate, VideoFullscreenUpdateEvent } from "expo-av";
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getMediaSource } from "@/assets/mediaMap";
@@ -205,11 +204,11 @@ export default function ExamModeScreen() {
       return () => { mounted = false; };
    }, [q]);
 
-   const fullScreenEnter = async () => {
-      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+   const fullScreenEnter = () => {
+      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
    };
-   const fullScreenExit = async () => {
-      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+   const fullScreenExit = () => {
+      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
    };
    const player = useVideoPlayer(mediaSource, player => {
       player.loop = true;

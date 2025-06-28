@@ -8,7 +8,6 @@ import { Client, Query, Storage } from 'react-native-appwrite';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getMediaSource } from "@/assets/mediaMap";
-import { ResizeMode, Video, VideoFullscreenUpdateEvent } from "expo-av";
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useTheme } from '@react-navigation/native';
 // Memoized komponenty dla lepszej wydajności
