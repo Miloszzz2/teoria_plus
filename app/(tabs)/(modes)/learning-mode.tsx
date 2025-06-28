@@ -9,8 +9,8 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getMediaSource } from "@/assets/mediaMap";
 import { ResizeMode, Video, VideoFullscreenUpdateEvent } from "expo-av";
+import { useVideoPlayer, VideoView } from 'expo-video';
 import { useTheme } from '@react-navigation/native';
-
 // Memoized komponenty dla lepszej wydajności
 const QuestionButton = React.memo(({
    index,
@@ -216,14 +216,16 @@ export default function LearningModeScreen() {
       canGoNext: current < questions.length - 1,
    }), [current, questions.length]);
 
-   const handleFullscreenUpdate = async (event: VideoFullscreenUpdateEvent) => {
-      if (event.fullscreenUpdate === 1) { // entering fullscreen
-         await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
-      } else if (event.fullscreenUpdate === 3) { // exiting fullscreen
-         await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
-      }
+   const fullScreenEnter = async () => {
+      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
    };
-
+   const fullScreenExit = async () => {
+      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+   };
+   const player = useVideoPlayer(mediaSource, player => {
+      player.loop = true;
+      player.play();
+   });
 
    if (loading) {
       return (
@@ -283,25 +285,25 @@ export default function LearningModeScreen() {
                   </StyledText>
 
                   {/* Uncomment when media is ready */}
-                  {currentQuestion.media && (currentQuestion.media.endsWith('.jpg') || currentQuestion.media.endsWith('.png')) && mediaSource && (
-                     <Image
-                        source={mediaSource}
-                        style={styles.mediaImg}
-                        resizeMode="contain"
-                     />
-                  )}
-                  {currentQuestion.media && currentQuestion.media.endsWith('.mp4') && mediaSource && (
-                     <Video
-                        source={mediaSource}
-                        style={styles.mediaImg}
-                        useNativeControls
-                        shouldPlay
-
-                        onFullscreenUpdate={handleFullscreenUpdate}
-                        resizeMode={ResizeMode.COVER}
-                     />
-                  )}
-
+                  <View style={{ flex: 1, justifyContent: "center", alignItems: 'center' }}>
+                     {currentQuestion.media && (currentQuestion.media.endsWith('.jpg') || currentQuestion.media.endsWith('.png')) && mediaSource && (
+                        <Image
+                           source={mediaSource}
+                           style={styles.mediaImg}
+                           resizeMode="cover"
+                        />
+                     )}
+                     {currentQuestion.media && currentQuestion.media.endsWith('.mp4') && mediaSource && (
+                        <VideoView
+                           player={player}
+                           style={styles.mediaImg}
+                           allowsFullscreen
+                           onFullscreenEnter={fullScreenEnter}
+                           onFullscreenExit={fullScreenExit}
+                           contentFit={"cover"}
+                        />
+                     )}
+                  </View>
                   <View style={styles.answersContainer}>
                      {answerOptions.map((option) => (
                         <AnswerOption
@@ -438,7 +440,7 @@ const styles = StyleSheet.create({
       backgroundColor: '#e7fbe9',
    },
    mediaImg: {
-      width: '100%',
+      width: '90%',
       height: 180,
       borderRadius: 12,
       marginBottom: 10,

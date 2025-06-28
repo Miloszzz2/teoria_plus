@@ -1,5 +1,5 @@
 import { FontAwesome6 } from "@expo/vector-icons";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TouchableOpacity, Switch, Image } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { supabase } from '../../utils/supabase';
@@ -9,19 +9,24 @@ import { useTheme } from '@react-navigation/native';
 export default function SettingsScreen() {
   const [notifications, setNotifications] = useState(true);
   const [language, setLanguage] = useState('pl');
+  const [user, setUser] = useState<any>(null);
   const { colors } = useTheme();
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setUser(data?.user));
+  }, []);
 
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
       <View style={{ paddingTop: 40 }}>
         <View style={styles.profileRow}>
           <Image
-            source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCIrXSVfSx9SnpnE5gweMEvmVuJb-6FkXzfDXHVy3iWGihmAXwqNG50Noh6U7sjAbd0MYTB81lphmbMCPUkmJv3I0Jl2dMGv4lIKAXu5GSY_QRT1y4zVYCIJI2pa73Qu7cRcr-bFZzFxmEuskbg8vCITNpYYt169EJhAB9nLWgc5aLPEVsedAliu-7rUafXb5BZfFMynn_z3zQWdsRjsJgXONvRFeBGbIT9DgEPrBxJMt3LIGpO6PDE41AbOr3vIZuhf4TCWfoWcR4' }}
+            source={{ uri: user?.user_metadata?.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user?.email || 'Użytkownik') + '&background=eee&color=121417&size=128' }}
             style={styles.avatar}
           />
           <View style={{ flex: 1, justifyContent: 'center' }}>
-            <CustomText style={[styles.profileTitle, { color: colors.text }]}>Profil</CustomText>
-            <CustomText style={styles.profileSubtitle}>Zobacz profil</CustomText>
+            <CustomText style={[styles.profileTitle, { color: colors.text }]}>{user?.user_metadata?.full_name || user?.email || 'Profil'}</CustomText>
+            <CustomText style={styles.profileSubtitle}>{user?.email ? `Zalogowano: ${user.email}` : 'Zobacz profil'}</CustomText>
           </View>
         </View>
         <View style={[styles.rowBetween, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>

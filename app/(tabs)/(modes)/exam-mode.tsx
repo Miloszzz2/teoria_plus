@@ -10,6 +10,7 @@ import { getMediaSource } from "@/assets/mediaMap";
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { Client, Query, Storage } from 'react-native-appwrite';
 import { useTheme } from '@react-navigation/native';
+import { useVideoPlayer, VideoView } from "expo-video";
 
 const EXAM_TIME = 25 * 60; // 25 minut w sekundach
 
@@ -186,15 +187,6 @@ export default function ExamModeScreen() {
       return `${m}:${sec < 10 ? '0' : ''}${sec}`;
    };
 
-   // Obsługa pełnego ekranu dla Video i powrotu do pionu po zakończeniu
-   const handleFullscreenUpdate = async (event: VideoFullscreenUpdateEvent) => {
-      if (event.fullscreenUpdate === 1) { // entering fullscreen
-         await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
-      } else if (event.fullscreenUpdate === 3) { // exiting fullscreen
-         await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
-      }
-   };
-
    // Always define q, isTakNieSection, isTakNie, options before any early return
    const q = questions[current];
    const isTakNieSection = current < 20;
@@ -212,6 +204,17 @@ export default function ExamModeScreen() {
       }
       return () => { mounted = false; };
    }, [q]);
+
+   const fullScreenEnter = async () => {
+      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+   };
+   const fullScreenExit = async () => {
+      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+   };
+   const player = useVideoPlayer(mediaSource, player => {
+      player.loop = true;
+      player.play();
+   });
 
    if (loading) {
       return <View style={[styles.center, { backgroundColor: colors.background }]}><ActivityIndicator size="large" color={colors.primary} /></View>;
@@ -249,23 +252,25 @@ export default function ExamModeScreen() {
          {/* Pytanie */}
          <ScrollView style={[styles.card, { backgroundColor: colors.card }]}>
             <StyledText style={[styles.question, { color: colors.text }]}>{q.pytanie}</StyledText>
-            {q.media && (q.media.endsWith('.jpg') || q.media.endsWith('.png')) && mediaSource && (
-               <Image
-                  source={mediaSource}
-                  style={styles.mediaImg}
-                  resizeMode="contain"
-               />
-            )}
-            {q.media && q.media.endsWith('.mp4') && mediaSource && (
-               <Video
-                  source={mediaSource}
-                  style={styles.mediaImg}
-                  useNativeControls
-                  shouldPlay
-                  onFullscreenUpdate={handleFullscreenUpdate}
-                  resizeMode={ResizeMode.COVER}
-               />
-            )}
+            <View style={{ flex: 1, justifyContent: "center", alignItems: 'center' }}>
+               {q.media && (q.media.endsWith('.jpg') || q.media.endsWith('.png')) && mediaSource && (
+                  <Image
+                     source={mediaSource}
+                     style={styles.mediaImg}
+                     resizeMode="cover"
+                  />
+               )}
+               {q.media && q.media.endsWith('.mp4') && mediaSource && (
+                  <VideoView
+                     player={player}
+                     style={styles.mediaImg}
+                     allowsFullscreen
+                     onFullscreenEnter={fullScreenEnter}
+                     onFullscreenExit={fullScreenExit}
+                     contentFit={"cover"}
+                  />
+               )}
+            </View>
             <View style={styles.answersContainer}>
                {options.map(opt => (
                   <TouchableOpacity
@@ -310,10 +315,9 @@ const styles = StyleSheet.create({
       shadowRadius: 8,
       shadowOffset: { width: 0, height: 2 },
       elevation: 2,
-
    },
    question: { fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
-   mediaImg: { width: '100%', height: 180, borderRadius: 12, marginBottom: 10, backgroundColor: '#eee' },
+   mediaImg: { width: '90%', height: 180, borderRadius: 12, marginBottom: 10, backgroundColor: '#eee' },
    answersContainer: { gap: 12, marginTop: 8 },
    answer: { borderRadius: 10, padding: 16, borderWidth: 1 },
    selected: { borderColor: '#3B82F6', backgroundColor: '#e6f0fd' },
