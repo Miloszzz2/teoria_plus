@@ -38,6 +38,8 @@ const MyDarkTheme = {
 };
 
 import { useTheme } from '@react-navigation/native';
+import { LanguageProvider } from "./language-provider";
+import i18n from "./i18n";
 
 function RootLayoutNav() {
   const { colors } = useTheme();
@@ -50,14 +52,41 @@ function RootLayoutNav() {
       <Stack.Screen
         name="category/[category]"
         options={({ route }) => {
-          // Fix: get category from route.params or from route.params?.category
+          // Get category from route params
           const category =
             (route?.params && (route.params as any).category)
               ? (route.params as any).category
               : 'Kategoria';
+          let translatedCategory = category;
+          switch (category) {
+            case 'Znaki drogowe':
+              translatedCategory = i18n.t('signs');
+              break;
+            case 'Przepisy ruchu':
+              translatedCategory = i18n.t('rules');
+              break;
+            case 'Bezpieczeństwo pojazdu':
+              translatedCategory = i18n.t('vehicle_safety');
+              break;
+            case 'Technika jazdy':
+              translatedCategory = i18n.t('driving_technique');
+              break;
+            case 'Nawigacja drogowa':
+              translatedCategory = i18n.t('navigation');
+              break;
+            case 'Procedury awaryjne':
+              translatedCategory = i18n.t('emergency');
+              break;
+            case 'Inne':
+              translatedCategory = i18n.t('other');
+              break;
+            default:
+              // fallback to raw
+              translatedCategory = category;
+          }
           return {
             href: null,
-            title: category,
+            title: translatedCategory,
             headerShown: true,
             headerStyle: {
               backgroundColor: colors.card,
@@ -70,6 +99,22 @@ function RootLayoutNav() {
               <Ionicons name="arrow-back" size={25} color={tintColor || colors.text} style={{ marginRight: 15, marginTop: 8 }} onPress={() => router.back()} />
             ),
           };
+        }}
+      />
+      <Stack.Screen
+        name="category-practice"
+        options={() => {
+          return ({
+            title: i18n.t('select_category'),
+            href: null,
+            headerShown: true,
+            headerStyle: { backgroundColor: colors.card, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
+            headerTitleStyle: { fontFamily: 'PlusJakartaSans_800ExtraBold', fontSize: 22, color: colors.text },
+            headerLeft: ({ tintColor }) => (
+              <Ionicons name="arrow-back" size={25} color={tintColor || colors.text} style={{ marginRight: 15, marginTop: 8 }} onPress={() => router.back()} />
+            ),
+            tabBarStyle: { display: 'none' }, // <-- Hides the tab bar
+          })
         }}
       />
     </Stack>
@@ -116,7 +161,9 @@ export default function RootLayout() {
   if (!categorySelected) return <CategorySelectScreen />;
   return (
     <ThemeProvider value={colorScheme === 'dark' ? MyDarkTheme : DefaultTheme}>
-      <RootLayoutNav />
+      <LanguageProvider >
+        <RootLayoutNav />
+      </LanguageProvider>
     </ThemeProvider>
   );
 }

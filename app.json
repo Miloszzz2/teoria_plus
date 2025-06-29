@@ -34,7 +34,8 @@
       "expo-router",
       "expo-font",
       "expo-video",
-      "react-native-video"
+      "react-native-video",
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true

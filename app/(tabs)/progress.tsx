@@ -4,6 +4,7 @@ import { useTheme } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from "react-native-safe-area-context";
+import i18n from '../i18n';
 
 const StatisticsScreen = () => {
   const { colors } = useTheme();
@@ -39,14 +40,14 @@ const StatisticsScreen = () => {
   );
 
   const statisticsData = [
-    { label: 'Ukończone egzaminy', value: stats.finishedExams },
-    { label: 'Najlepszy wynik', value: `${stats.bestScore} pkt` },
-    { label: 'Przejrzane pytania', value: stats.viewedQuestions },
+    { label: i18n.t('finished_exams'), value: stats.finishedExams },
+    { label: i18n.t('best_score'), value: stats.bestScore },
+    { label: i18n.t('viewed_questions'), value: stats.viewedQuestions },
   ];
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={[styles.title, { color: colors.text }]}>Statystyki</Text>
+      <Text style={[styles.title, { color: colors.text }]}>{i18n.t('statistics')}</Text>
       <View style={styles.statsContainer}>
         {statisticsData.map((stat, index) => (
           <View key={index} style={[styles.statItem, { backgroundColor: colors.card }]}>

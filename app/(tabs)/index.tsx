@@ -1,9 +1,10 @@
 import React from 'react';
-import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
 import CustomText from "@/components/StyledText";
 import { useTheme } from '@react-navigation/native';
+import i18n from '../i18n';
 
 export default function Index() {
    const router = useRouter();
@@ -11,19 +12,19 @@ export default function Index() {
 
    return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
-         <CustomText style={[styles.title, { color: colors.text }]}>Witaj! Wybierz tryb nauki</CustomText>
+         <CustomText style={[styles.title, { color: colors.text }]}>{i18n.t('choose_mode')}</CustomText>
          <View style={styles.buttonRow}>
             <TouchableOpacity style={[styles.button, styles.exam]} onPress={() => router.push('/(tabs)/(modes)/exam-mode')}>
                <MaterialCommunityIcons name="clock" size={40} color="#fff" style={styles.iconShadow} />
-               <CustomText style={styles.buttonText}>Tryb egzaminu</CustomText>
+               <CustomText style={styles.buttonText}>{i18n.t('exam_mode')}</CustomText>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.button, styles.learn]} onPress={() => router.push('/(tabs)/(modes)/learning-mode')}>
                <MaterialCommunityIcons name="book-open-variant" size={40} color="#fff" style={styles.iconShadow} />
-               <CustomText style={styles.buttonText}>Tryb nauki</CustomText>
+               <CustomText style={styles.buttonText}>{i18n.t('learning_mode')}</CustomText>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.button, styles.practice]} onPress={() => router.push('/(tabs)/(modes)/category-practice-mode')}>
+            <TouchableOpacity style={[styles.button, styles.practice]} onPress={() => router.push('/category-practice')}>
                <FontAwesome5 name="layer-group" size={36} color="#fff" style={styles.iconShadow} />
-               <CustomText style={styles.buttonText}>Praktyka kategorii</CustomText>
+               <CustomText style={styles.buttonText}>{i18n.t('category_practice')}</CustomText>
             </TouchableOpacity>
          </View>
       </View>
@@ -42,6 +43,7 @@ const styles = StyleSheet.create({
       fontWeight: 'semibold',
       marginBottom: 32,
       color: '#222',
+      textAlign: 'center'
    },
    buttonRow: {
       width: '100%',

@@ -5,12 +5,14 @@ import { Picker } from '@react-native-picker/picker';
 import { supabase } from '../../utils/supabase';
 import CustomText from '../../components/StyledText';
 import { useTheme } from '@react-navigation/native';
+import { useLanguage } from '../language-provider';
+import i18n from '../i18n';
 
 export default function SettingsScreen() {
   const [notifications, setNotifications] = useState(true);
-  const [language, setLanguage] = useState('pl');
   const [user, setUser] = useState<any>(null);
   const { colors } = useTheme();
+  const { language, setLanguage } = useLanguage();
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUser(data?.user));
@@ -21,16 +23,20 @@ export default function SettingsScreen() {
       <View style={{ paddingTop: 40 }}>
         <View style={styles.profileRow}>
           <Image
-            source={{ uri: user?.user_metadata?.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user?.email || 'Użytkownik') + '&background=eee&color=121417&size=128' }}
+            source={{ uri: user?.user_metadata?.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user?.email || i18n.t('profile')) + '&background=eee&color=121417&size=128' }}
             style={styles.avatar}
           />
           <View style={{ flex: 1, justifyContent: 'center' }}>
-            <CustomText style={[styles.profileTitle, { color: colors.text }]}>{user?.user_metadata?.full_name || user?.email || 'Profil'}</CustomText>
-            <CustomText style={styles.profileSubtitle}>{user?.email ? `Zalogowano: ${user.email}` : 'Zobacz profil'}</CustomText>
+            <CustomText style={[styles.profileTitle, { color: colors.text }]}>{user?.user_metadata?.full_name || user?.email || i18n.t('profile')}</CustomText>
+            <CustomText style={styles.profileSubtitle}>
+              {user?.email
+                ? i18n.t('logged_in_as', { email: user.email })
+                : i18n.t('view_profile')}
+            </CustomText>
           </View>
         </View>
         <View style={[styles.rowBetween, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
-          <CustomText style={[styles.rowText, { color: colors.text }]}>Powiadomienia</CustomText>
+          <CustomText style={[styles.rowText, { color: colors.text }]}>{i18n.t('notifications')}</CustomText>
           <Switch
             value={notifications}
             onValueChange={setNotifications}
@@ -39,7 +45,7 @@ export default function SettingsScreen() {
           />
         </View>
         <View style={[styles.rowBetween, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
-          <CustomText style={[styles.rowText, { color: colors.text }]}>Język</CustomText>
+          <CustomText style={[styles.rowText, { color: colors.text }]}>{i18n.t('language')}</CustomText>
           <Picker
             selectedValue={language}
             style={{ width: 180, color: colors.text, backgroundColor: colors.card, borderRadius: 8 }}
@@ -47,25 +53,25 @@ export default function SettingsScreen() {
             dropdownIconColor={colors.text}
           >
             <Picker.Item label="🇵🇱  Polski" value="pl" />
-            <Picker.Item label="🇩🇪  Niemiecki" value="de" />
-            <Picker.Item label="🇺🇦  Ukraiński" value="ua" />
+            <Picker.Item label="🇩🇪  Deutsch" value="de" />
+            <Picker.Item label="🇺🇦  Українська" value="ua" />
           </Picker>
         </View>
-        <CustomText style={[styles.sectionTitle, { color: colors.text }]}>Wsparcie</CustomText>
+        <CustomText style={[styles.sectionTitle, { color: colors.text }]}>{i18n.t('support')}</CustomText>
         <TouchableOpacity style={[styles.rowBetween, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
-          <CustomText style={[styles.rowText, { color: colors.text }]}>Centrum pomocy</CustomText>
+          <CustomText style={[styles.rowText, { color: colors.text }]}>{i18n.t('help_center')}</CustomText>
           <FontAwesome6 name="arrow-right" color={colors.text} />
         </TouchableOpacity>
         <TouchableOpacity style={[styles.rowBetween, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
-          <CustomText style={[styles.rowText, { color: colors.text }]}>Kontakt</CustomText>
+          <CustomText style={[styles.rowText, { color: colors.text }]}>{i18n.t('contact')}</CustomText>
           <FontAwesome6 name="arrow-right" color={colors.text} />
         </TouchableOpacity>
         <TouchableOpacity style={[styles.rowBetween, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
-          <CustomText style={[styles.rowText, { color: colors.text }]}>Regulamin</CustomText>
+          <CustomText style={[styles.rowText, { color: colors.text }]}>{i18n.t('regulations')}</CustomText>
           <FontAwesome6 name="arrow-right" color={colors.text} />
         </TouchableOpacity>
         <TouchableOpacity style={[styles.rowBetween, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
-          <CustomText style={[styles.rowText, { color: colors.text }]}>Polityka prywatności</CustomText>
+          <CustomText style={[styles.rowText, { color: colors.text }]}>{i18n.t('privacy_policy')}</CustomText>
           <FontAwesome6 name="arrow-right" color={colors.text} />
         </TouchableOpacity>
       </View>
@@ -82,7 +88,7 @@ export default function SettingsScreen() {
           await supabase.auth.signOut();
         }}
       >
-        <CustomText style={{ color: '#fff', fontWeight: 'semibold', fontSize: 18, padding: 15 }}>Wyloguj się</CustomText>
+        <CustomText style={{ color: '#fff', fontWeight: 'semibold', fontSize: 18, padding: 15 }}>{i18n.t('logout')}</CustomText>
       </TouchableOpacity>
       <View style={{ height: 20, backgroundColor: colors.background }} />
     </View>

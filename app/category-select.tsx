@@ -29,33 +29,13 @@ const categories = [
 export default function CategorySelectScreen() {
    const router = useRouter();
    const [selected, setSelected] = useState<string | null>(null);
-   const [loading, setLoading] = useState(false);
-   const [alreadySelected, setAlreadySelected] = useState<boolean>(false);
+   const [loading, setLoading] = useState(false)
    const { colors } = useTheme();
-
-   useFocusEffect(
-      useCallback(() => {
-         let isActive = true;
-         AsyncStorage.getItem('selectedCategory').then(val => {
-            if (isActive) setAlreadySelected(!!val);
-         });
-         return () => { isActive = false; };
-      }, [])
-   );
-
-   useEffect(() => {
-      if (alreadySelected) {
-         // Don't navigate during render, use useEffect
-         router.navigate("/(tabs)");
-      }
-   }, [alreadySelected, router]);
 
    const handleContinue = async () => {
       if (!selected) return;
-      setLoading(true);
       await AsyncStorage.setItem('selectedCategory', selected);
-      setLoading(false);
-      router.push('/(tabs)');
+      router.navigate('/(tabs)');
    };
 
    return (

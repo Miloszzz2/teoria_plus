@@ -10,6 +10,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { getMediaSource } from "@/assets/mediaMap";
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useTheme } from '@react-navigation/native';
+import { useLanguage } from '../../language-provider';
+import i18n from "@/app/i18n";
+
 // Memoized komponenty dla lepszej wydajności
 const QuestionButton = React.memo(({
    index,
@@ -101,6 +104,7 @@ export default function LearningModeScreen() {
    const [mediaSource, setMediaSource] = useState<any>(undefined);
    const scrollRef = React.useRef<ScrollView>(null);
    const { colors } = useTheme();
+   const { language } = useLanguage();
 
    // Load last viewed question index for selected category
    useEffect(() => {
@@ -113,21 +117,32 @@ export default function LearningModeScreen() {
                setLoading(false);
                return;
             }
-
             const cat = selected.trim();
             setCategory(cat);
-            // Load last viewed question index for this category
-            const lastIdxStr = await AsyncStorage.getItem(`learning_last_question_${cat}`);
-            const lastIdx = lastIdxStr ? parseInt(lastIdxStr, 10) : 0;
-            setCurrent(isNaN(lastIdx) ? 0 : lastIdx);
-
+            // Dynamiczne kolumny na podstawie języka
+            let pytanieCol = 'pytanie', odpA = 'odpowiedz_a', odpB = 'odpowiedz_b', odpC = 'odpowiedz_c';
+            if (language === 'de') {
+               pytanieCol = 'pytanie_de'; odpA = 'odp_a_de'; odpB = 'odp_b_de'; odpC = 'odp_c_de';
+            } else if (language === 'ua') {
+               pytanieCol = 'pytanie_ua'; odpA = 'odp_a_ua'; odpB = 'odp_b_ua'; odpC = 'odp_c_ua';
+            } else if (language === 'en') {
+               pytanieCol = 'pytanie_eng'; odpA = 'odp_a_eng'; odpB = 'odp_b_eng'; odpC = 'odp_c_eng';
+            }
+            // Pobierz pytania
             const { data, error } = await supabase
                .from('pytania_egzaminacyjne')
-               .select('*')
+               .select(`*, ${pytanieCol}, ${odpA}, ${odpB}, ${odpC}`)
                .ilike('kategorie', `%${cat}%`);
-
             if (isMounted && !error && data) {
-               setQuestions(data);
+               // Mapuj pytania na wybrany język
+               const mapQ = (q: any) => ({
+                  ...q,
+                  pytanie: q[pytanieCol] || q.pytanie,
+                  odpowiedz_a: q[odpA] || q.odpowiedz_a,
+                  odpowiedz_b: q[odpB] || q.odpowiedz_b,
+                  odpowiedz_c: q[odpC] || q.odpowiedz_c,
+               });
+               setQuestions(data.map(mapQ));
             }
          } catch (error) {
             console.error('Error fetching questions:', error);
@@ -140,7 +155,7 @@ export default function LearningModeScreen() {
 
       fetchQuestions();
       return () => { isMounted = false; };
-   }, []);
+   }, [language]);
 
    // Store last viewed question index on change
    useEffect(() => {
@@ -339,7 +354,7 @@ export default function LearningModeScreen() {
                   styles.bottomButtonText,
                   { color: navigationState.canGoPrevious ? '#fff' : colors.text }
                ]}>
-                  Poprzedni
+                  {i18n.t('previous')}
                </StyledText>
             </TouchableOpacity>
 
@@ -358,7 +373,7 @@ export default function LearningModeScreen() {
                   styles.bottomButtonText,
                   { color: navigationState.canGoNext ? '#fff' : colors.text }
                ]}>
-                  Następny
+                  {i18n.t('next')}
                </StyledText>
             </TouchableOpacity>
          </View>

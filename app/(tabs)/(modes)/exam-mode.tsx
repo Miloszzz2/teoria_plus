@@ -10,6 +10,7 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import { Client, Query, Storage } from 'react-native-appwrite';
 import { useTheme } from '@react-navigation/native';
 import { useVideoPlayer, VideoView } from "expo-video";
+import { useLanguage } from '../../language-provider';
 
 const EXAM_TIME = 25 * 60; // 25 minut w sekundach
 
@@ -69,6 +70,7 @@ export default function ExamModeScreen() {
    const [category, setCategory] = useState<string | null>(null);
    const [mediaSource, setMediaSource] = useState<any>(undefined);
    const { colors } = useTheme();
+   const { language } = useLanguage();
 
    // Pobierz pytania i kategorię
    useEffect(() => {
@@ -82,25 +84,42 @@ export default function ExamModeScreen() {
                return;
             }
             setCategory(selected);
+            // Dynamiczne kolumny na podstawie języka
+            let pytanieCol = 'pytanie', odpA = 'odpowiedz_a', odpB = 'odpowiedz_b', odpC = 'odpowiedz_c';
+            if (language === 'de') {
+               pytanieCol = 'pytanie_de'; odpA = 'odp_a_de'; odpB = 'odp_b_de'; odpC = 'odp_c_de';
+            } else if (language === 'ua') {
+               pytanieCol = 'pytanie_ua'; odpA = 'odp_a_ua'; odpB = 'odp_b_ua'; odpC = 'odp_c_ua';
+            } else if (language === 'en') {
+               pytanieCol = 'pytanie_eng'; odpA = 'odp_a_eng'; odpB = 'odp_b_eng'; odpC = 'odp_c_eng';
+            }
             // Pobierz pytania Tak/Nie (część podstawowa)
             const { data: basic, error: err1 } = await supabase
                .from('pytania_egzaminacyjne')
-               .select('*')
+               .select(`*, ${pytanieCol}, ${odpA}, ${odpB}, ${odpC}`)
                .ilike('kategorie', `%${selected}%`)
                .is('odpowiedz_a', null);
             // Pobierz pytania wielokrotnego wyboru (część specjalistyczna)
             const { data: multi, error: err2 } = await supabase
                .from('pytania_egzaminacyjne')
-               .select('*')
+               .select(`*, ${pytanieCol}, ${odpA}, ${odpB}, ${odpC}`)
                .ilike('kategorie', `%${selected}%`)
-               .not("odpowiedz_a", 'is', null);
+               .not('odpowiedz_a', 'is', null);
             if (err1 || err2 || !basic || !multi) {
                setLoading(false);
                return;
             }
+            // Mapuj pytania na wybrany język
+            const mapQ = (q: any) => ({
+               ...q,
+               pytanie: q[pytanieCol] || q.pytanie,
+               odpowiedz_a: q[odpA] || q.odpowiedz_a,
+               odpowiedz_b: q[odpB] || q.odpowiedz_b,
+               odpowiedz_c: q[odpC] || q.odpowiedz_c,
+            });
             // Losuj 20 Tak/Nie i 12 ABC
-            const basicQ = shuffle(basic).slice(0, 20);
-            const multiQ = shuffle(multi).slice(0, 12);
+            const basicQ = shuffle(basic.map(mapQ)).slice(0, 20);
+            const multiQ = shuffle(multi.map(mapQ)).slice(0, 12);
             // Najpierw Tak/Nie, potem ABC
             const allQ = [...basicQ, ...multiQ];
             if (isMounted) {
@@ -115,7 +134,7 @@ export default function ExamModeScreen() {
       };
       fetchQuestions();
       return () => { isMounted = false; };
-   }, []);
+   }, [language]);
 
    // Timer
    useEffect(() => {

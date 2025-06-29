@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, Tabs, useRouter } from 'expo-router';
-
+import i18n from '../i18n';
 
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
@@ -17,7 +17,6 @@ function TabBarIcon(props: {
 }
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
   const router = useRouter();
   const { colors } = useTheme();
 
@@ -53,23 +52,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="(modes)/category-practice-mode"
-        options={{
-          title: "Wybierz kategorie",
-          href: null,
-          headerShown: true,
-          headerStyle: { backgroundColor: colors.card, borderBottomWidth: 0, elevation: 0, shadowOpacity: 0 },
-          headerTitleStyle: { fontFamily: 'PlusJakartaSans_800ExtraBold', fontSize: 22, color: colors.text },
-          headerLeft: ({ tintColor }) => (
-            <Ionicons name="arrow-back" size={25} color={tintColor || colors.text} style={{ marginLeft: 16, marginRight: 10, marginTop: 8 }} onPress={() => router.back()} />
-          ),
-          tabBarStyle: { display: 'none' }, // <-- Hides the tab bar
-        }}
-      />
-      <Tabs.Screen
         name="(modes)/exam-mode"
         options={{
-          title: "Wybierz kategorie",
+          title: i18n.t('select_category'),
           href: null,
 
         }}

@@ -10,6 +10,9 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
 import { useVideoPlayer, VideoView } from "expo-video";
+import i18n from '../i18n';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useLanguage } from "../language-provider";
 
 // Appwrite client setup
 const appwrite = new Client();
@@ -69,20 +72,58 @@ export default function CategoryScreen() {
    const [mediaSource, setMediaSource] = useState<any>(undefined);
    const scrollRef = useRef<ScrollView>(null);
    const { colors } = useTheme();
-
+   const { language } = useLanguage();
+   // Load last viewed question index for selected category
    useEffect(() => {
       let isMounted = true;
-      (async () => {
+      const fetchQuestions = async () => {
          setLoading(true);
-         const { data } = await supabase
-            .from('pytania_egzaminacyjne')
-            .select('*')
-            .eq('kategoria_pytania', category);
-         if (isMounted) setQuestions(data || []);
-         setLoading(false);
-      })();
+         try {
+            const selected = await AsyncStorage.getItem('selectedCategory');
+            if (!selected) {
+               setLoading(false);
+               return;
+            }
+            const cat = selected.trim();
+            // Dynamiczne kolumny na podstawie języka
+            let pytanieCol = 'pytanie', odpA = 'odpowiedz_a', odpB = 'odpowiedz_b', odpC = 'odpowiedz_c';
+            if (language === 'de') {
+               pytanieCol = 'pytanie_de'; odpA = 'odp_a_de'; odpB = 'odp_b_de'; odpC = 'odp_c_de';
+            } else if (language === 'ua') {
+               pytanieCol = 'pytanie_ua'; odpA = 'odp_a_ua'; odpB = 'odp_b_ua'; odpC = 'odp_c_ua';
+            } else if (language === 'en') {
+               pytanieCol = 'pytanie_eng'; odpA = 'odp_a_eng'; odpB = 'odp_b_eng'; odpC = 'odp_c_eng';
+            }
+            console.log(category.toString())
+            // Pobierz pytania
+            const { data, error } = await supabase
+               .from('pytania_egzaminacyjne')
+               .select(`*, ${pytanieCol}, ${odpA}, ${odpB}, ${odpC}`)
+               .ilike('kategorie', `%${cat}%`).eq("kategoria_pytania", category.toString());
+
+            if (isMounted && !error && data) {
+               // Mapuj pytania na wybrany język
+               const mapQ = (q: any) => ({
+                  ...q,
+                  pytanie: q[pytanieCol] || q.pytanie,
+                  odpowiedz_a: q[odpA] || q.odpowiedz_a,
+                  odpowiedz_b: q[odpB] || q.odpowiedz_b,
+                  odpowiedz_c: q[odpC] || q.odpowiedz_c,
+               });
+               setQuestions(data.map(mapQ));
+            }
+         } catch (error) {
+            console.error('Error fetching questions:', error);
+         } finally {
+            if (isMounted) {
+               setLoading(false);
+            }
+         }
+      };
+
+      fetchQuestions();
       return () => { isMounted = false; };
-   }, [category]);
+   }, [language]);
 
    // Scroll to top on question change
    useEffect(() => {
@@ -420,10 +461,10 @@ const styles = StyleSheet.create({
    bottomButton: {
       borderRadius: 12,
       paddingVertical: 14,
-      paddingHorizontal: 28,
+      paddingHorizontal: 28
    },
    bottomButtonText: {
       fontWeight: 'bold',
-      fontSize: 18,
-   },
+      fontSize: 18
+   }
 });
