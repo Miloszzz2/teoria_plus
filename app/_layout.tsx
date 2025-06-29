@@ -40,6 +40,7 @@ const MyDarkTheme = {
 import { useTheme } from '@react-navigation/native';
 import { LanguageProvider } from "./language-provider";
 import i18n from "./i18n";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function RootLayoutNav() {
   const { colors } = useTheme();
@@ -150,9 +151,9 @@ export default function RootLayout() {
   useEffect(() => {
     if (session && session.user) {
       // Sprawdź czy kategoria została wybrana
-      import('@react-native-async-storage/async-storage').then(({ default: AsyncStorage }) => {
-        AsyncStorage.getItem('selectedCategory').then(val => setCategorySelected(!!val));
-      });
+
+      AsyncStorage.getItem('selectedCategory').then(val => setCategorySelected(!!val));
+
     }
   }, [session])
 
