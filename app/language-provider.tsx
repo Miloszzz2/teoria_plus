@@ -11,20 +11,6 @@ const LanguageContext = createContext({
 export const LanguageProvider = ({ children }: { children: any }) => {
   const [language, setLanguageState] = useState('pl');
 
-  useEffect(() => {
-    AsyncStorage.getItem('app_language').then(lang => {
-      if (lang) {
-        setLanguageState(lang);
-        i18n.locale = lang;
-      } else {
-        // Ustaw domyślny język na podstawie urządzenia jeśli nie wybrano
-
-        setLanguageState('pl');
-        i18n.locale = 'pl';
-      }
-    });
-  }, []);
-
   const setLanguage = (lang: string) => {
     setLanguageState(lang);
     i18n.locale = lang;

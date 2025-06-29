@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, SetStateAction } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Image } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -34,9 +34,11 @@ export default function CategorySelectScreen() {
 
    const handleContinue = async () => {
       if (!selected) return;
+      setLoading(true)
       await AsyncStorage.setItem('selectedCategory', selected);
-      router.navigate('/(tabs)');
-   };
+      setLoading(false)
+      router.replace('/(tabs)')
+   }
 
    return (
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.background, justifyContent: 'space-between' }}>
