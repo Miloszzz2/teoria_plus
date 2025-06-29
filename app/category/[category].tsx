@@ -331,7 +331,7 @@ export default function CategoryScreen() {
                         styles.bottomButtonText,
                         { color: navigationState.canGoPrevious ? '#fff' : colors.text }
                      ]}>
-                        Poprzedni
+                        {i18n.t('previous')}
                      </StyledText>
                   </TouchableOpacity>
 
@@ -350,7 +350,7 @@ export default function CategoryScreen() {
                         styles.bottomButtonText,
                         { color: navigationState.canGoNext ? '#fff' : colors.text }
                      ]}>
-                        Następny
+                        {i18n.t('next')}
                      </StyledText>
                   </TouchableOpacity>
                </View>
